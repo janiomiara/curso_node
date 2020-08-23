@@ -1,9 +1,16 @@
 const express = require('express')
 const router = express.Router()
 
+module.exports = app => {
+  const user = require("../controller/UserController")
+  const router = require("express").Router();
+
+  router.post("/register", user.create);
+  router.get("/user/:id", user.findOne);
+  router.put("/user/update/:id", user.update);
+  router.delete("/user/delete/:id", user.delete);
 
 
-const user = router.get('/user', async (req, res, next) => {
-  res.json('janio')
-})
-module.exports = user
+  app.use('/', router);
+};
+

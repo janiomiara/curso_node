@@ -1,42 +1,54 @@
-const express = require('express');
-const User = require('../models/User');
-const router = express.Router();
+const express = require('express')
+const User = require('../models/User')
+const router = express.Router()
 
-
-router.post('/register', async (req, res) => {
-  const {email} = req.body;
+exports.create = async (req, res) => {
+  const { email } = req.body
   try {
-    if (await User.findOne({email}))
-      return res.status(400).send({error: 'User already exists'})
-    const user = await User.create(req.body);
-    return res.send({ user, });
-  }catch (err) {
-    return res.status(400).send({error: 'Registration failed'})
-
+    if (await User.findOne({ email }))
+      return res.status(400).send({ error: 'Usuario ja existe com esse email' })
+    const user = await User.create(req.body)
+    return res.send({ user })
+  } catch (err) {
+    return res.status(400).send({ error: 'Falha ao registrar' })
   }
-})
+};
 
-router.get('/user/:id', async (req, res) => {
+exports.findOne = async (req, res) => {
   try {
-    const {id} = req.params
+    const { id } = req.params
+    if (!id)  return res.status(400).send({ error: 'Para acessar o um usuario passe um id' })
     const user = await User.findById(id)
-    return res.send(user);
-  }catch (err) {
-    return res.status(400).send({error: 'Usuario não existe'})
+    return res.send(user)
+  } catch (err) {
+    return res.status(400).send({ error: 'Usuario não existe' })
   }
-})
+};
 
-router.delete('/user/update/:id', async (req, res) => {
+exports.update = async (req, res) => {
+
   try {
-    const {id} = req.params
+    const { id } = req.params
     const DadosUser = await User.findById(id)
-    const user = await User.deleteOne({_id: id})
-    return res.send({Mensagem: 'Usuario deletado com sucesso', Usuario: DadosUser});
-  }catch (err) {
-    return res.status(400).send({error: 'Usuario não existe'})
+    DadosUser.updateOne({ _id: id},{
+      $set:  req.body
+    })
+    return res.send({ Mensagem: 'Deu Certo', })
+  } catch (e) {
+    res.send('Usuario não encontrado')
   }
-})
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.params
+    const DadosUser = await User.findById(id)
+    await User.deleteOne({ _id: id })
+    return res.send({ Mensagem: 'Usuario deletado com sucesso', Usuario: DadosUser })
+  } catch (err) {
+    return res.status(400).send({ error: 'Usuario não existe' })
+  }
+}
 
 
 
-module.exports = app => app.use('/', router);
