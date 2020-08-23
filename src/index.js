@@ -1,11 +1,16 @@
 const express = require('express');
-const config = require("./config/config");
 const bodyParser = require('body-parser');
+const config = require("./config/config");
+
 const db = require('./config/db')
-const app = express();
+
+
+const index = express();
 const {port} = config
 
-app.use(bodyParser.json());
+index.use(bodyParser.json());
+
+
 
 db.on("connected", function () {
   console.log("connected!");
@@ -19,10 +24,9 @@ db.on("error", function (error) {
   console.log('Connection error: ' + error);
 });
 
+require('./controller/UserController')(index);
+//require('./routes/UserRoute')(index);
 
-
-require('./config/routes')(app);
-
-app.listen(port, () => {
-  console.log(`App rodando na porta: ${port}`);
+index.listen(port, () => {
+  console.log(`App rodando na porta: http://localhost:${port}`);
 });
