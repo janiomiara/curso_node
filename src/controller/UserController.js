@@ -12,32 +12,31 @@ exports.create = async (req, res) => {
   } catch (err) {
     return res.status(400).send({ error: 'Falha ao registrar' })
   }
-};
+}
 
 exports.findOne = async (req, res) => {
   try {
     const { id } = req.params
-    if (!id)  return res.status(400).send({ error: 'Para acessar o um usuario passe um id' })
+    if (!id) return res.status(400).send({ error: 'Para acessar o um usuario passe um id' })
     const user = await User.findById(id)
     return res.send(user)
   } catch (err) {
     return res.status(400).send({ error: 'Usuario não existe' })
   }
-};
+}
 
 exports.update = async (req, res) => {
-
   try {
     const { id } = req.params
-    const DadosUser = await User.findById(id)
-    DadosUser.updateOne({ _id: id},{
-      $set:  req.body
+
+    await User.update({ _id: id }, {
+      $set: req.body,
     })
-    return res.send({ Mensagem: 'Deu Certo', })
+    return res.send({ Mensagem: 'Usuario modificado', User: req.body })
   } catch (e) {
     res.send('Usuario não encontrado')
   }
-};
+}
 
 exports.delete = async (req, res) => {
   try {
